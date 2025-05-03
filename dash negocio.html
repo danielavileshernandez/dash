@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Ventas Premium Michoacán</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2196f3;
+      --secondary: #ff9800;
+      --dark: #222;
+      --light: #f4f4f4;
+      --success: #4CAF50;
+      --danger: #f44336;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+    
+    .dashboard {
+      display: flex;
+      min-height: 100vh;
+    }
+    
+    .sidebar {
+      width: 250px;
+      background: var(--dark);
+      color: white;
+      padding: 20px 0;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+    
+    .sidebar-header {
+      padding: 0 20px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .sidebar-header h2 {
+      margin: 0;
+      font-size: 1.5em;
+      display: flex;
+      align-items: center;
+    }
+    
+    .sidebar-header h2 i {
+      margin-right: 10px;
+      color: var(--primary);
+    }
+    
+    .sidebar-menu {
+      padding: 20px 0;
+    }
+    
+    .menu-item {
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+    }
+    
+    .menu-item:hover, .menu-item.active {
+      background: rgba(255,255,255,0.1);
+    }
+    
+    .menu-item i {
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
+    }
+    
+    .main-content {
+      flex: 1;
+      padding: 20px;
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    .header h1 {
+      margin: 0;
+      color: var(--dark);
+    }
+    
+    .card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .card-header h3 {
+      margin: 0;
+    }
+    
+    .btn {
+      padding: 8px 16px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+    
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+    
+    .btn-secondary {
+      background: var(--secondary);
+      color: white;
+    }
+    
+    .btn:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    th {
+      background: #f9f9f9;
+      font-weight: 600;
+    }
+    
+    tr:hover {
+      background: #f5f5f5;
+    }
+    
+    .action-btns {
+      display: flex;
+      gap: 5px;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    
+    .form-control:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid #eee;
+    }
+    
+    .close {
+      font-size: 24px;
+      cursor: pointer;
+      color: #999;
+    }
+    
+    .close:hover {
+      color: var(--danger);
+    }
+    
+    .product-image-preview {
+      max-width: 100px;
+      max-height: 100px;
+      margin-top: 10px;
+      display: none;
+    }
+    
+    @media (max-width: 768px) {
+      .dashboard {
+        flex-direction: column;
+      }
+      
+      .sidebar {
+        width: 100%;
+        height: auto;
+      }
+      
+      .action-btns {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <h2><i class="fas fa-store"></i> Ventas Premium</h2>
+      </div>
+      <div class="sidebar-menu">
+        <div class="menu-item active" onclick="showSection('products')">
+          <i class="fas fa-box-open"></i> Productos
+        </div>
+        <div class="menu-item" onclick="showSection('orders')">
+          <i class="fas fa-shopping-cart"></i> Pedidos
+        </div>
+        <div class="menu-item" onclick="showSection('settings')">
+          <i class="fas fa-cog"></i> Configuración
+        </div>
+      </div>
+    </div>
+    
+    <div class="main-content">
+      <div class="header">
+        <h1>Panel de Administración</h1>
+        <div>
+          <span id="current-date"></span>
+        </div>
+      </div>
+      
+      <!-- Sección de Productos -->
+      <div id="products-section" class="dashboard-section">
+        <div class="card">
+          <div class="card-header">
+            <h3>Lista de Productos</h3>
+            <button class="btn btn-primary" onclick="openAddProductModal()">
+              <i class="fas fa-plus"></i> Agregar Producto
+            </button>
+          </div>
+          <div class="table-responsive">
+            <table id="products-table">
+              <thead>
+                <tr>
+                  <th>Imagen</th>
+                  <th>Nombre</th>
+                  <th>Precio</th>
+                  <th>Precio Anterior</th>
+                  <th>Descuento</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="products-table-body">
+                <!-- Los productos se cargarán aquí con JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Sección de Pedidos -->
+      <div id="orders-section" class="dashboard-section" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <h3>Pedidos Recientes</h3>
+          </div>
+          <p>No hay pedidos recientes.</p>
+        </div>
+      </div>
+      
+      <!-- Sección de Configuración -->
+      <div id="settings-section" class="dashboard-section" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <h3>Configuración de la Tienda</h3>
+          </div>
+          <div class="form-group">
+            <label>Nombre de la Tienda</label>
+            <input type="text" class="form-control" id="store-name" value="Ventas Premium Michoacán">
+          </div>
+          <div class="form-group">
+            <label>Descripción</label>
+            <textarea class="form-control" id="store-description" rows="3">Productos de calidad con garantía y envíos rápidos</textarea>
+          </div>
+          <div class="form-group">
+            <label>Números de WhatsApp</label>
+            <input type="text" class="form-control" id="whatsapp-number1" value="5217861424715" placeholder="Número 1">
+            <input type="text" class="form-control" id="whatsapp-number2" value="5214434845675" placeholder="Número 2" style="margin-top: 10px;">
+          </div>
+          <div class="form-group">
+            <label>Correos Electrónicos</label>
+            <input type="email" class="form-control" id="email1" value="avilesdeny98@gmail.com" placeholder="Correo 1">
+            <input type="email" class="form-control" id="email2" value="vargasmorenocarlosaxel181@gmail.com" placeholder="Correo 2" style="margin-top: 10px;">
+          </div>
+          <button class="btn btn-success" onclick="saveSettings()">Guardar Configuración</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal para Agregar/Editar Producto -->
+  <div id="product-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-title">Agregar Nuevo Producto</h3>
+        <span class="close" onclick="closeModal()">&times;</span>
+      </div>
+      <form id="product-form">
+        <input type="hidden" id="product-id">
+        <div class="form-group">
+          <label>Nombre del Producto</label>
+          <input type="text" class="form-control" id="product-name" required>
+        </div>
+        <div class="form-group">
+          <label>URL de la Imagen</label>
+          <input type="text" class="form-control" id="product-image" required>
+          <img id="image-preview" src="" class="product-image-preview" alt="Vista previa">
+        </div>
+        <div class="form-group">
+          <label>Precio Actual (MXN)</label>
+          <input type="number" class="form-control" id="product-price" step="0.01" required>
+        </div>
+        <div class="form-group">
+          <label>Precio Anterior (MXN) - Opcional</label>
+          <input type="number" class="form-control" id="product-old-price" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>Porcentaje de Descuento - Opcional</label>
+          <input type="number" class="form-control" id="product-discount" min="0" max="100" step="1">
+        </div>
+        <div class="form-group">
+          <label>Etiqueta - Opcional</label>
+          <select class="form-control" id="product-tag">
+            <option value="">Ninguna</option>
+            <option value="OFERTA">OFERTA</option>
+            <option value="NUEVO">NUEVO</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Número de WhatsApp para este producto</label>
+          <select class="form-control" id="product-whatsapp">
+            <option value="5217861424715">786 142 4715</option>
+            <option value="5214434845675">443 484 5675</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar Producto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <script>
+    // Productos de ejemplo (se cargarán desde localStorage si existen)
+    let products = [
+      {
+        id: 1,
+        name: "AirPods 3 Pro Max",
+        image: "https://m.media-amazon.com/images/I/61SUj2aKoEL._AC_UF1000,1000_QL80_.jpg",
+        price: 600,
+        oldPrice: 800,
+        discount: 25,
+        tag: "OFERTA",
+        whatsapp: "5217861424715"
+      },
+      {
+        id: 2,
+        name: "AirPods 2 Pro Max c/ Cancelación",
+        image: "ai.jpeg",
+        price: 900,
+        oldPrice: null,
+        discount: null,
+        tag: "",
+        whatsapp: "5217861424715"
+      },
+      {
+        id: 3,
+        name: "Jordan 4 Originales",
+        image: "https://images.stockx.com/images/Air-Jordan-4-Retro-Military-Black-Product.jpg",
+        price: 1800,
+        oldPrice: null,
+        discount: null,
+        tag: "NUEVO",
+        whatsapp: "5217861424715"
+      },
+      {
+        id: 4,
+        name: "Bocina JBL Portátil",
+        image: "jbl.webp",
+        price: 550,
+        oldPrice: 700,
+        discount: 21,
+        tag: "",
+        whatsapp: "5217861424715"
+      },
+      {
+        id: 5,
+        name: "Cargadores Apple (Set)",
+        image: "https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/MU7U2?wid=2000&hei=2000&fmt=jpeg&qlt=95&.v=1501795519312",
+        price: 300,
+        oldPrice: null,
+        discount: null,
+        tag: "OFERTA",
+        whatsapp: "5214434845675"
+      },
+      {
+        id: 6,
+        name: "Funda Apple Original",
+        image: "https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/MT223?wid=2000&hei=2000&fmt=jpeg&qlt=95&.v=1670521031697",
+        price: 250,
+        oldPrice: null,
+        discount: null,
+        tag: "",
+        whatsapp: "5217861424715"
+      }
+    ];
+    
+    // Cargar productos desde localStorage si existen
+    document.addEventListener('DOMContentLoaded', function() {
+      const savedProducts = localStorage.getItem('ventas-premium-products');
+      if (savedProducts) {
+        products = JSON.parse(savedProducts);
+      }
+      
+      updateCurrentDate();
+      renderProductsTable();
+      
+      // Configurar evento para vista previa de imagen
+      document.getElementById('product-image').addEventListener('input', function() {
+        const preview = document.getElementById('image-preview');
+        if (this.value) {
+          preview.src = this.value;
+          preview.style.display = 'block';
+        } else {
+          preview.style.display = 'none';
+        }
+      });
+      
+      // Configurar formulario de producto
+      document.getElementById('product-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        saveProduct();
+      });
+    });
+    
+    function updateCurrentDate() {
+      const now = new Date();
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      document.getElementById('current-date').textContent = now.toLocaleDateString('es-ES', options);
+    }
+    
+    function showSection(sectionId) {
+      // Ocultar todas las secciones
+      document.querySelectorAll('.dashboard-section').forEach(section => {
+        section.style.display = 'none';
+      });
+      
+      // Mostrar la sección seleccionada
+      document.getElementById(`${sectionId}-section`).style.display = 'block';
+      
+      // Actualizar menú activo
+      document.querySelectorAll('.menu-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      
+      document.querySelector(`.menu-item[onclick="showSection('${sectionId}')"]`).classList.add('active');
+    }
+    
+    function renderProductsTable() {
+      const tbody = document.getElementById('products-table-body');
+      tbody.innerHTML = '';
+      
+      products.forEach(product => {
+        const tr = document.createElement('tr');
+        
+        tr.innerHTML = `
+          <td><img src="${product.image}" alt="${product.name}" style="max-width: 50px; max-height: 50px;"></td>
+          <td>${product.name}</td>
+          <td>$${product.price.toFixed(2)} MXN</td>
+          <td>${product.oldPrice ? `$${product.oldPrice.toFixed(2)} MXN` : '-'}</td>
+          <td>${product.discount ? `${product.discount}%` : '-'}</td>
+          <td class="action-btns">
+            <button class="btn btn-primary" onclick="editProduct(${product.id})"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-danger" onclick="deleteProduct(${product.id})"><i class="fas fa-trash"></i></button>
+          </td>
+        `;
+        
+        tbody.appendChild(tr);
+      });
+    }
+    
+    function openAddProductModal() {
+      document.getElementById('modal-title').textContent = 'Agregar Nuevo Producto';
+      document.getElementById('product-form').reset();
+      document.getElementById('product-id').value = '';
+      document.getElementById('image-preview').style.display = 'none';
+      document.getElementById('product-modal').style.display = 'flex';
+    }
+    
+    function editProduct(id) {
+      const product = products.find(p => p.id === id);
+      if (!product) return;
+      
+      document.getElementById('modal-title').textContent = 'Editar Producto';
+      document.getElementById('product-id').value = product.id;
+      document.getElementById('product-name').value = product.name;
+      document.getElementById('product-image').value = product.image;
+      document.getElementById('product-price').value = product.price;
+      document.getElementById('product-old-price').value = product.oldPrice || '';
+      document.getElementById('product-discount').value = product.discount || '';
+      document.getElementById('product-tag').value = product.tag || '';
+      document.getElementById('product-whatsapp').value = product.whatsapp;
+      
+      const preview = document.getElementById('image-preview');
+      preview.src = product.image;
+      preview.style.display = product.image ? 'block' : 'none';
+      
+      document.getElementById('product-modal').style.display = 'flex';
+    }
+    
+    function closeModal() {
+      document.getElementById('product-modal').style.display = 'none';
+    }
+    
+    function saveProduct() {
+      const id = document.getElementById('product-id').value;
+      const name = document.getElementById('product-name').value;
+      const image = document.getElementById('product-image').value;
+      const price = parseFloat(document.getElementById('product-price').value);
+      const oldPrice = document.getElementById('product-old-price').value ? 
+        parseFloat(document.getElementById('product-old-price').value) : null;
+      const discount = document.getElementById('product-discount').value ? 
+        parseInt(document.getElementById('product-discount').value) : null;
+      const tag = document.getElementById('product-tag').value;
+      const whatsapp = document.getElementById('product-whatsapp').value;
+      
+      if (id) {
+        // Editar producto existente
+        const index = products.findIndex(p => p.id === parseInt(id));
+        if (index !== -1) {
+          products[index] = {
+            id: parseInt(id),
+            name,
+            image,
+            price,
+            oldPrice,
+            discount,
+            tag,
+            whatsapp
+          };
+        }
+      } else {
+        // Agregar nuevo producto
+        const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+        products.push({
+          id: newId,
+          name,
+          image,
+          price,
+          oldPrice,
+          discount,
+          tag,
+          whatsapp
+        });
+      }
+      
+      // Guardar en localStorage
+      localStorage.setItem('ventas-premium-products', JSON.stringify(products));
+      
+      // Actualizar tabla y cerrar modal
+      renderProductsTable();
+      closeModal();
+    }
+    
+    function deleteProduct(id) {
+      if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+        products = products.filter(p => p.id !== id);
+        localStorage.setItem('ventas-premium-products', JSON.stringify(products));
+        renderProductsTable();
+      }
+    }
+    
+    function saveSettings() {
+      const storeName = document.getElementById('store-name').value;
+      const storeDescription = document.getElementById('store-description').value;
+      const whatsapp1 = document.getElementById('whatsapp-number1').value;
+      const whatsapp2 = document.getElementById('whatsapp-number2').value;
+      const email1 = document.getElementById('email1').value;
+      const email2 = document.getElementById('email2').value;
+      
+      const settings = {
+        storeName,
+        storeDescription,
+        whatsapp1,
+        whatsapp2,
+        email1,
+        email2
+      };
+      
+      localStorage.setItem('ventas-premium-settings', JSON.stringify(settings));
+      alert('Configuración guardada correctamente');
+    }
+    
+    // Función para exportar los productos a un archivo HTML (como el original)
+    function exportToHTML() {
+      // Esta función generaría el código HTML con los productos actuales
+      // Podría implementarse para descargar un archivo index.html actualizado
+    }
+  </script>
+</body>
+</html>
